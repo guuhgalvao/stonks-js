@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estacionamento</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+</head>
+<body>
+    <main>
+        <!-- As a link -->
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">Stonks</a>
+            </div>
+        </nav>
+        <div class="container pt-5">
+            <div class="row justify-content-center">
+                <div class="col-12 p-5 rounded border border-secondary shadow-sm bg-light">
+                    <form id="form-registry">
+                        <div class="form-row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="name">Nome</label>
+                                    <input type="text" class="form-control" id="name" autocomplete="off">
+                                    <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="car">Carro</label>
+                                    <input type="text" class="form-control" id="car">
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="plate">Placa</label>
+                                    <input type="text" class="form-control" id="plate">
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="color">Cor</label>
+                                    <input type="text" class="form-control" id="color">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="btn-add">Adicionar</button>
+                    </form>
+                </div>
+            </div>
+            <div class="row justify-content-center mt-4 d-none">
+                <div class="col-12 p-5 rounded border border-secondary shadow-sm bg-light">
+                    <table class="table table-hover">
+                        <thead class="">
+                            <tr>
+                                <th>Nome</th>
+                                <th>Carro</th>
+                                <th>Placa</th>
+                                <th>Cor</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list-cars">
+                            <!-- <tr>
+                                <td>Brenda</td>
+                                <td>Fiat Uno Vivace</td>
+                                <td>HLH-5022</td>
+                                <td>Cinza</td>
+                                <td></td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let regs = [];
+
+        const loadInitialState = () => {
+            let response = localStorage.getItem('regs');
+            if (response !== null) regs = JSON.parse(response);
+
+            if (regs.length > 0) {
+                let list_cars = document.getElementById('list-cars');
+
+                // for (let x in regs) {
+                //     list_cars.insertAdjacentHTML('beforeend', `
+                //         <tr>
+                //             <td>${regs[x].name}</td>
+                //             <td>${regs[x].car}</td>
+                //             <td>${regs[x].plate}</td>
+                //             <td>${regs[x].color}</td>
+                //             <td></td>
+                //         </tr>
+                //     `)
+                // }
+
+                regs.map(reg => {
+                    list_cars.insertAdjacentHTML('beforeend', `
+                        <tr>
+                            <td>${reg.name}</td>
+                            <td>${reg.car}</td>
+                            <td>${reg.plate}</td>
+                            <td>${reg.color}</td>
+                            <td></td>
+                        </tr>
+                    `)
+                })
+
+                list_cars.closest('div.row').classList.add('d-flex')
+                list_cars.closest('div.row').classList.remove('d-none')
+            }
+        }
+
+        loadInitialState();
+        
+        const updateStorage = () => {
+            localStorage.setItem('regs', JSON.stringify(regs))
+        }
+
+        let btnAdd = document.getElementById('btn-add');
+
+        let validationField = (field, validation) => {
+            field.classList.remove('is-valid', 'is-invalid')
+            
+            if (typeof field.parentElement.getElementsByClassName('invalid-feedback')[0] !== "undefined")
+                field.parentElement.getElementsByClassName('invalid-feedback')[0].remove();
+
+            if (validation === 'valid') {
+                field.classList.add('is-valid')
+            }
+            if (validation === 'invalid') {
+                field.classList.add('is-invalid')
+
+                // Forma 1
+                // let divFeedBack = document.createElement('div')
+                // divFeedBack.textContent = 'Campo obrigatório.'
+                // divFeedBack.classList.add('invalid-feedback')
+                // field.parentElement.appendChild(divFeedBack)
+
+                // Forma 2
+                field.parentElement.insertAdjacentHTML('beforeend', '<div class="invalid-feedback">Campo obrigatório.</div>')
+            }
+        }
+
+        let validateForm = () => {
+            let field_name = document.getElementById('name');
+            let field_car = document.getElementById('car');
+            let field_plate = document.getElementById('plate');
+            let field_color = document.getElementById('color');
+
+            // field name validation
+            if (field_name.value === '') {
+                validationField(field_name, 'invalid');
+                return false;
+            } else {
+                validationField(field_name, 'valid');
+            }
+
+            // field car validation
+            if (field_car.value === '') {
+                validationField(field_car, 'invalid');
+                return false;
+            } else {
+                validationField(field_car, 'valid');
+            }
+
+            // field plate validation
+            if (field_plate.value === '') {
+                validationField(field_plate, 'invalid');
+                return false;
+            } else {
+                validationField(field_plate, 'valid');
+            }
+
+            // field color validation
+            if (field_color.value === '') {
+                validationField(field_color, 'invalid');
+                return false;
+            }
+
+            field_name.classList.remove('is-valid')
+            field_car.classList.remove('is-valid')
+            field_plate.classList.remove('is-valid')
+            field_color.classList.remove('is-valid', 'is-invalid')
+            if (typeof field_color.parentElement.getElementsByClassName('invalid-feedback')[0] !== "undefined")
+                field_color.parentElement.getElementsByClassName('invalid-feedback')[0].remove();
+
+            return true;
+        }
+
+        btnAdd.addEventListener('click', () => {
+            if (validateForm()) {
+                let reg = {
+                    name: document.getElementById('name').value,
+                    car: document.getElementById('car').value,
+                    plate: document.getElementById('plate').value,
+                    color: document.getElementById('color').value
+                }
+                regs.push(reg)
+                updateStorage()
+
+                let list_cars = document.getElementById('list-cars');
+                list_cars.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td>${reg.name}</td>
+                        <td>${reg.car}</td>
+                        <td>${reg.plate}</td>
+                        <td>${reg.color}</td>
+                        <td></td>
+                    </tr>
+                `)
+                list_cars.closest('div.row').classList.add('d-flex')
+                list_cars.closest('div.row').classList.remove('d-none')
+
+                document.getElementById('form-registry').reset()
+            }
+        })
+    </script>
+</body>
+</html>
